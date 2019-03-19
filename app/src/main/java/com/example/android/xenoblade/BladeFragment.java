@@ -2,6 +2,11 @@ package com.example.android.xenoblade;
 
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.os.AsyncTask;
+import android.os.FileObserver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +18,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +26,11 @@ import android.widget.AdapterView;
 
 import com.example.android.xenoblade.databinding.FragmentBladeBinding;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BladeFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Blade>> {
+public class BladeFragment extends Fragment {
 
     BladeAdapter bladeAdapter;
     FragmentBladeBinding binding;
@@ -43,6 +50,7 @@ public class BladeFragment extends Fragment implements LoaderManager.LoaderCallb
         ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo == null || !networkInfo.isConnected()) {
+            Log.e(LOG_TAG, "No Network Connection");
             binding.loadingIndicator.setVisibility(View.GONE);
             binding.emptyView.setText(R.string.error_no_internet);
             return binding.getRoot();
@@ -64,22 +72,28 @@ public class BladeFragment extends Fragment implements LoaderManager.LoaderCallb
             }
         });
 
-        getLoaderManager().initLoader(BLADE_LOADER_ID, null, this);
+        //See: https://stackoverflow.com/questions/49405616/cannot-resolve-symbol-viewmodelproviders-on-appcompatactivity/49407157#49407157
+        //Use: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#e65b
+        BladeViewModel model = ViewModelProviders.of(this).get(BladeViewModel.class);
+        model.getBladeList().observe(this, new Observer<List<Blade>>() {
+            @Override
+            public void onChanged(@Nullable List<Blade> bladeList) {
+                // update UI
+                if (bladeList == null) {
+                    return;
+                }
+
+                binding.loadingIndicator.setVisibility(View.GONE);
+                binding.emptyView.setText(R.string.error_no_blades);
+
+                bladeAdapter.clear();
+                if (!bladeList.isEmpty()) {
+                    bladeAdapter.addAll(bladeList);
+                }
+            }
+        });
+
         return binding.getRoot();
     }
-
-    @Override
-    public Loader<List<Blade>> onCreateLoader(int id, Bundle args) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<Blade>> loader, List<Blade> data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<Blade>> loader) {
-
-    }
 }
+

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Xenoblade</string>
     <string name="error_no_internet">No Internet Connection</string>
+    <string name="error_no_blades">No Blades Found</string>
 
-    <string name="title_blade">Blade</string>
+    <string name="title_blade">Blades</string>
 </resources>

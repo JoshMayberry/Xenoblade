@@ -1,8 +1,11 @@
 package com.example.android.xenoblade;
 
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 import android.util.Patterns;
 
@@ -15,22 +18,20 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class Blade {
+//Must be public to use databinding
+public class Blade extends BaseObservable {
     private String LOG_TAG = Blade.class.getSimpleName();
 
     private int pageIndex = -1;
     private String title = "";
-    private String urlArt = "";
     private String urlPage = "";
     private String urlPortrait = "";
     private String urlElement = "";
     private String urlRarity = "";
-    private String gender = "";
-    private String type = "";
-    private String weapon = "";
-    private String role = "";
-    private String source = "";
-    private String mercTitle = "";
+
+    private Bitmap bmpPortrait = null;
+    private Bitmap bmpElement = null;
+    private Bitmap bmpRarity = null;
 
     private static final Pattern regexRemoveLink = Pattern.compile("<[^<]*>");
 
@@ -43,34 +44,100 @@ class Blade {
         return "Blade{" +
                 "title='" + title + '\'' +
                 "pageIndex='" + pageIndex + '\'' +
-                ", urlArt='" + urlArt + '\'' +
                 ", urlPage='" + urlPage + '\'' +
                 ", urlPortrait='" + urlPortrait + '\'' +
                 ", urlElement='" + urlElement + '\'' +
                 ", urlRarity='" + urlRarity + '\'' +
-                ", gender='" + gender + '\'' +
-                ", type='" + type + '\'' +
-                ", weapon='" + weapon + '\'' +
-                ", role='" + role + '\'' +
-                ", source='" + source + '\'' +
-                ", mercTitle='" + mercTitle + '\'' +
                 '}';
     }
 
-    Blade() {
+    public Blade() {
     }
 
+    //Getters
+    //See: https://codelabs.developers.google.com/codelabs/android-databinding/index.html?index=..%2F..index#6
+    //See: Android Data Binding Library - Update UI using Observable objects: https://www.youtube.com/watch?v=gP_zj-CIBvM
+    @Bindable
+    public String getTitle() {
+        return title;
+    }
+
+    @Bindable
+    public Bitmap getPortrait() {
+        return bmpPortrait;
+    }
+
+    @Bindable
+    public Bitmap getElement() {
+        return bmpElement;
+    }
+
+    @Bindable
+    public Bitmap getRarity() {
+        return bmpRarity;
+    }
+
+    int getPageIndex() {
+        return pageIndex;
+    }
+
+    Uri getPage() {
+        return Uri.parse(urlPage);
+    }
+
+    //Setters
+    void setPageIndex(int pageIndex) {
+        this.pageIndex = pageIndex;
+    }
+
+    Blade setTitle(String title) {
+        this.title = title;
+        notifyPropertyChanged(BR.title);
+        return this;
+    }
+
+    Blade setUrlPage(String urlPage) {
+        this.urlPage = urlPage;
+        return this;
+    }
+
+    Blade setPortrait(String urlPortrait) {
+        this.urlPortrait = urlPortrait;
+        this.bmpPortrait = QueryUtilities.getImageFromURL(urlPortrait);
+        return this;
+    }
+
+    Blade setElement(String urlElement) {
+        this.urlElement = urlElement;
+        this.bmpElement = QueryUtilities.getImageFromURL(urlElement);
+        return this;
+    }
+
+    Blade setRarity(String urlRarity) {
+        this.urlRarity = urlRarity;
+        this.bmpRarity = QueryUtilities.getImageFromURL(urlRarity);
+        return this;
+    }
+
+    //Methods
+
     /**
-     * Finds the image from the url and returns it.
-     * Use: https://stackoverflow.com/questions/2471935/how-to-load-an-imageview-by-url-in-android/16293557#16293557
+     * For some reason, the databinding is not applying the titles when notifyPropertyChanged is in the setter.
      */
-    private Bitmap getImageFromURL(String url) {
-        try {
-            return BitmapFactory.decodeStream(new URL(url).openConnection().getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
+    void forcePropertyChanged() {
+        Log.e(LOG_TAG, "title: " + title);
+        notifyPropertyChanged(BR.title);
+    }
+
+    static String getJsonUrlList() {
+        return "https://xenoblade.fandom.com/api/v1/Articles/List?category=Blades&limit=1000";
+    }
+
+    String getJsonUrlDetails() {
+        if (pageIndex == -1) {
+            return null;
         }
-        return null;
+        return "https://xenoblade.fandom.com/api.php?action=query&format=json&pageids=" + pageIndex + "&prop=pageprops";
     }
 
     /**
@@ -78,12 +145,17 @@ class Blade {
      */
     boolean parseListData(JSONObject root, JSONObject number) throws JSONException, IOException {
         String url = number.getString("url");
-        if (url.startsWith("Category")) {
+        if (url.contains("Category:")) {
+            return false;
+        }
+
+        String title = number.getString("title");
+        if (title.contains(".")) {
             return false;
         }
 
         setPageIndex(number.getInt("id"));
-        setTitle(number.getString("title"));
+        setTitle(title);
         setUrlPage(root.getString("basepath") + url);
         return true;
     }
@@ -120,11 +192,8 @@ class Blade {
         for (int i = 0; i < data.length(); i++) {
             JSONObject dataItem = data.getJSONObject(i);
             switch (dataItem.getString("type")) {
-                case "title":
-                    continue;
-
                 case "image":
-                    setUrlPortrait(dataItem.getJSONArray("data")
+                    setPortrait(dataItem.getJSONArray("data")
                             .getJSONObject(0)
                             .getString("url"));
                     continue;
@@ -141,174 +210,15 @@ class Blade {
                         if (matcher.find()) {
                             switch (value.getString("source")) {
                                 case "element":
-                                    setUrlElement(matcher.group());
+                                    setElement(matcher.group());
                                     continue;
                                 case "rarity":
-                                    setUrlRarity(matcher.group());
+                                    setRarity(matcher.group());
                             }
                         }
                     }
-                    continue;
-
-                case "data":
-                    JSONObject subData = dataItem.getJSONObject("data");
-                    if (!subData.has("source")) {
-                        continue;
-                    }
-                    switch (subData.getString("source")) {
-                        case "gender":
-                            setGender(subData.getString("value"));
-                            continue;
-                        case "type":
-                            setType(subData.getString("value"));
-                            continue;
-                        case "weapon":
-                            setWeapon(subData.getString("value"));
-                            continue;
-                        case "role":
-                            setRole(subData.getString("value"));
-                            continue;
-                        case "source":
-                            setSource(regexRemoveLink.matcher(subData.getString("value")).replaceAll(""));
-                            continue;
-                        case "mercgroup":
-                            setMercTitle(subData.getString("value"));
-                    }
             }
         }
-
         return true;
-    }
-
-    public int getPageIndex() {
-        return pageIndex;
-    }
-
-    public void setPageIndex(int pageIndex) {
-        this.pageIndex = pageIndex;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    Blade setTitle(String title) {
-        this.title = title;
-        return this;
-    }
-
-    public Bitmap getArt() {
-        return getImageFromURL(urlArt);
-    }
-
-    public String getUrlArt() {
-        return urlArt;
-    }
-
-    Blade setUrlArt(String urlArt) {
-        this.urlArt = urlArt;
-        return this;
-    }
-
-    public String getUrlPage() {
-        return urlPage;
-    }
-
-    Blade setUrlPage(String urlPage) {
-        this.urlPage = urlPage;
-        return this;
-    }
-
-    public Bitmap getPortrait() {
-        return getImageFromURL(urlPortrait);
-    }
-
-    public String getUrlPortrait() {
-        return urlPortrait;
-    }
-
-    Blade setUrlPortrait(String urlPortrait) {
-        this.urlPortrait = urlPortrait;
-        return this;
-    }
-
-    public Bitmap getElement() {
-        return getImageFromURL(urlElement);
-    }
-
-    public String getUrlElement() {
-        return urlElement;
-    }
-
-    Blade setUrlElement(String urlElement) {
-        this.urlElement = urlElement;
-        return this;
-    }
-
-    public Bitmap getRarity() {
-        return getImageFromURL(urlRarity);
-    }
-
-    public String getUrlRarity() {
-        return urlRarity;
-    }
-
-    Blade setUrlRarity(String urlRarity) {
-        this.urlRarity = urlRarity;
-        return this;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    Blade setGender(String gender) {
-        this.gender = gender;
-        return this;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    Blade setType(String type) {
-        this.type = type;
-        return this;
-    }
-
-    public String getWeapon() {
-        return weapon;
-    }
-
-    Blade setWeapon(String weapon) {
-        this.weapon = weapon;
-        return this;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    Blade setRole(String role) {
-        this.role = role;
-        return this;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    Blade setSource(String source) {
-        this.source = source;
-        return this;
-    }
-
-    public String getMercTitle() {
-        return mercTitle;
-    }
-
-    Blade setMercTitle(String mercTitle) {
-        this.mercTitle = mercTitle;
-        return this;
     }
 }

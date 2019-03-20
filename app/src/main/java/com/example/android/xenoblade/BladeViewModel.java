@@ -5,9 +5,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -15,18 +13,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 //See: https://medium.com/@taman.neupane/basic-example-of-livedata-and-viewmodel-14d5af922d0#7e70
 //Use: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#e65b
 class BladeViewModel extends AndroidViewModel {
     private String LOG_TAG = BladeViewModel.class.getSimpleName();
     private final MutableLiveData<List<Blade>> bladeList = new MutableLiveData<>();
+    private final MutableLiveData<Integer> progress = new MutableLiveData<>();
 
     BladeViewModel(@NonNull Application application) {
         super(application);
@@ -37,6 +33,11 @@ class BladeViewModel extends AndroidViewModel {
         return bladeList;
     }
 
+    //See: https://stackoverflow.com/questions/48239657/how-to-handle-android-livedataviewmodel-with-progressbar-on-screen-rotate/53238717#53238717
+    LiveData<Integer> getProgress() {
+        return progress;
+    }
+
     /**
      * Loads a list of blades.
      * Clicking on a blade will open the fandom article for it.
@@ -44,7 +45,7 @@ class BladeViewModel extends AndroidViewModel {
     @SuppressLint("StaticFieldLeak")
     //See: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#fb19
     private void loadBladeList() {
-        new AsyncTask<Void, Void, List<Blade>>() {
+        new AsyncTask<Void, Integer, List<Blade>>() {
             @Override
             protected List<Blade> doInBackground(Void... voids) {
                 List<Blade> data = new ArrayList<>();
@@ -58,7 +59,7 @@ class BladeViewModel extends AndroidViewModel {
 
                 //Get a list of available blades
                 try {
-                    String jsonResponse = QueryUtilities.makeHttpRequest("https://xenoblade.fandom.com/api/v1/Articles/List?category=Blades&limit=1000");
+                    String jsonResponse = QueryUtilities.makeHttpRequest(Blade.getJsonUrlList());
                     if (jsonResponse == null) {
                         Log.e(LOG_TAG, "Get JSON error");
                         return null;
@@ -72,10 +73,11 @@ class BladeViewModel extends AndroidViewModel {
                         if (!blade.parseListData(root, items.getJSONObject(i))) {
                             continue;
                         }
-                        if (!blade.parseInfoData(QueryUtilities.makeHttpRequest("https://xenoblade.fandom.com/api.php?action=query&format=json&pageids=" + blade.getPageIndex() + "&prop=pageprops"))) {
+                        if (!blade.parseInfoData(QueryUtilities.makeHttpRequest(blade.getJsonUrlDetails()))) {
                             continue;
                         }
                         data.add(blade);
+                        publishProgress(data.size());
                     }
 
                 } catch (IOException error) {
@@ -89,8 +91,15 @@ class BladeViewModel extends AndroidViewModel {
             }
 
             @Override
+            protected void onProgressUpdate(Integer... valueList) {
+                if (valueList.length < 1) {
+                    return;
+                }
+                progress.setValue(valueList[0]);
+            }
+
+            @Override
             protected void onPostExecute(List<Blade> data) {
-                super.onPostExecute(data);
                 bladeList.setValue(data);
             }
         }.execute();

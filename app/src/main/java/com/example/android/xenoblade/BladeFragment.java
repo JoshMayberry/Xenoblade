@@ -66,8 +66,7 @@ public class BladeFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Blade blade = bladeAdapter.getItem(position);
-                Uri earthquakeUri = Uri.parse(blade.getUrlPage());
-                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, earthquakeUri);
+                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, blade.getPage());
                 startActivity(websiteIntent);
             }
         });
@@ -83,6 +82,7 @@ public class BladeFragment extends Fragment {
                     return;
                 }
 
+                binding.counter.setVisibility(View.GONE);
                 binding.loadingIndicator.setVisibility(View.GONE);
                 binding.emptyView.setText(R.string.error_no_blades);
 
@@ -90,6 +90,18 @@ public class BladeFragment extends Fragment {
                 if (!bladeList.isEmpty()) {
                     bladeAdapter.addAll(bladeList);
                 }
+            }
+        });
+
+        model.getProgress().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer progress) {
+                // update UI
+                if (progress == null) {
+                    return;
+                }
+
+                binding.counter.setText(String.valueOf(progress));
             }
         });
 

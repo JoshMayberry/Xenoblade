@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,24 +58,6 @@ class QueryUtilities {
 //        locationList.add(new Location().parse_sample());
 //        return locationList;
 //    }
-
-    /**
-     * Finds the image from the url and returns it.
-     * Use: https://stackoverflow.com/questions/2471935/how-to-load-an-imageview-by-url-in-android/16293557#16293557
-     */
-    static Bitmap getImageFromURL(String url) {
-        if (url.isEmpty()) {
-            return null;
-        }
-
-        Log.e(LOG_TAG, "url: " + url);
-        try {
-            return BitmapFactory.decodeStream(new URL(url).openConnection().getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     /**
      * Returns new URL object from the given string URL.

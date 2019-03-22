@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="border">8dp</dimen>
+    <dimen name="portraitSize">96dp</dimen>
+    <dimen name="elementSize">32dp</dimen>
+</resources>

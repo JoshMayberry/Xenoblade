@@ -27,11 +27,6 @@ public class Blade extends BaseObservable {
     private String urlPage = "";
     private String urlPortrait = "";
     private String urlElement = "";
-    private String urlRarity = "";
-
-    private Bitmap bmpPortrait = null;
-    private Bitmap bmpElement = null;
-    private Bitmap bmpRarity = null;
 
     private static final Pattern regexRemoveLink = Pattern.compile("<[^<]*>");
 
@@ -47,7 +42,6 @@ public class Blade extends BaseObservable {
                 ", urlPage='" + urlPage + '\'' +
                 ", urlPortrait='" + urlPortrait + '\'' +
                 ", urlElement='" + urlElement + '\'' +
-                ", urlRarity='" + urlRarity + '\'' +
                 '}';
     }
 
@@ -62,19 +56,12 @@ public class Blade extends BaseObservable {
         return title;
     }
 
-    @Bindable
-    public Bitmap getPortrait() {
-        return bmpPortrait;
+    public String getPortrait() {
+        return urlPortrait;
     }
 
-    @Bindable
-    public Bitmap getElement() {
-        return bmpElement;
-    }
-
-    @Bindable
-    public Bitmap getRarity() {
-        return bmpRarity;
+    public String getElement() {
+        return urlElement;
     }
 
     int getPageIndex() {
@@ -86,8 +73,9 @@ public class Blade extends BaseObservable {
     }
 
     //Setters
-    void setPageIndex(int pageIndex) {
+    Blade setPageIndex(int pageIndex) {
         this.pageIndex = pageIndex;
+        return this;
     }
 
     Blade setTitle(String title) {
@@ -103,32 +91,15 @@ public class Blade extends BaseObservable {
 
     Blade setPortrait(String urlPortrait) {
         this.urlPortrait = urlPortrait;
-        this.bmpPortrait = QueryUtilities.getImageFromURL(urlPortrait);
         return this;
     }
 
     Blade setElement(String urlElement) {
         this.urlElement = urlElement;
-        this.bmpElement = QueryUtilities.getImageFromURL(urlElement);
-        return this;
-    }
-
-    Blade setRarity(String urlRarity) {
-        this.urlRarity = urlRarity;
-        this.bmpRarity = QueryUtilities.getImageFromURL(urlRarity);
         return this;
     }
 
     //Methods
-
-    /**
-     * For some reason, the databinding is not applying the titles when notifyPropertyChanged is in the setter.
-     */
-    void forcePropertyChanged() {
-        Log.e(LOG_TAG, "title: " + title);
-        notifyPropertyChanged(BR.title);
-    }
-
     static String getJsonUrlList() {
         return "https://xenoblade.fandom.com/api/v1/Articles/List?category=Blades&limit=1000";
     }
@@ -157,7 +128,7 @@ public class Blade extends BaseObservable {
         setPageIndex(number.getInt("id"));
         setTitle(title);
         setUrlPage(root.getString("basepath") + url);
-        return true;
+        return (pageIndex != -1) && (!urlPage.isEmpty());
     }
 
     /**
@@ -185,8 +156,8 @@ public class Blade extends BaseObservable {
         if (infoBoxesRaw == null || infoBoxesRaw.length() < 1) {
             return false;
         }
-        JSONArray infoboxes = new JSONArray(infoBoxesRaw);
-        JSONArray data = infoboxes.getJSONObject(0)
+        JSONArray data = new JSONArray(infoBoxesRaw)
+                .getJSONObject(0)
                 .getJSONArray("data");
 
         for (int i = 0; i < data.length(); i++) {
@@ -207,18 +178,13 @@ public class Blade extends BaseObservable {
 
                         //See: https://stackoverflow.com/questions/6384240/how-to-parse-a-url-from-a-string-in-android/26426891#26426891
                         Matcher matcher = Patterns.WEB_URL.matcher(value.getString("value"));
-                        if (matcher.find()) {
-                            switch (value.getString("source")) {
-                                case "element":
-                                    setElement(matcher.group());
-                                    continue;
-                                case "rarity":
-                                    setRarity(matcher.group());
-                            }
+                        if (matcher.find() && (value.getString("source").equals("element"))) {
+                            setElement(matcher.group());
+                            break;
                         }
                     }
             }
         }
-        return true;
+        return (!urlElement.isEmpty()) && (!urlPortrait.isEmpty());
     }
 }

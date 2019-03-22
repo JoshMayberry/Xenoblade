@@ -11,8 +11,9 @@
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@null"
-            android:dividerHeight="0dp"
+            android:background="@color/colorPrimaryLight"
+            android:divider="@color/colorPrimaryDark"
+            android:dividerHeight="1dp"
             android:orientation="vertical" />
 
         <TextView

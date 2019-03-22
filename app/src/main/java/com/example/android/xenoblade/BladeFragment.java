@@ -40,10 +40,10 @@ public class BladeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Context context = getContext();
+
         //See: https://stackoverflow.com/questions/34706399/how-to-use-data-binding-with-fragment/40527833#40527833
         binding = FragmentBladeBinding.inflate(inflater, container, false);
-
-        Context context = getContext();
 
         //See: https://developer.android.com/training/basics/network-ops/connecting.html
         //Use: https://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html#DetermineConnection

@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="blade"
             type="com.example.android.xenoblade.Blade" />
@@ -14,74 +13,40 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <View
-            android:id="@+id/background2"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/colorPrimaryDark"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
         <ImageView
             android:id="@+id/portrait"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:background="@color/colorPrimary"
             android:src="@drawable/ic_launcher_foreground"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/linearLayout" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <View
-            android:id="@+id/background"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/colorPrimaryLight"
-            app:layout_constraintBottom_toBottomOf="@+id/portrait"
-            app:layout_constraintEnd_toStartOf="@+id/portrait"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/portrait" />
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
+        <ImageView
+            android:id="@+id/element"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="@dimen/border"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="@+id/background2"
+            app:layout_constraintBottom_toBottomOf="@+id/name"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/element"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_compass" />
-
-            <ImageView
-                android:id="@+id/rarity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@android:drawable/btn_star" />
-
-        </LinearLayout>
+            app:layout_constraintTop_toTopOf="@+id/name"
+            tools:src="@android:drawable/ic_menu_compass" />
 
         <TextView
             android:id="@+id/name"
-            style="@style/TextAppearance.AppCompat.Large"
+            style="@style/TextAppearance.AppCompat.Display1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            android:layout_marginStart="@dimen/border"
+            android:layout_marginTop="@dimen/border"
+            android:layout_marginEnd="@dimen/border"
+            android:ellipsize="end"
+            android:maxLines="1"
             app:layout_constraintEnd_toStartOf="@+id/portrait"
-            app:layout_constraintStart_toEndOf="@+id/linearLayout"
-            app:layout_constraintTop_toTopOf="@+id/linearLayout"
-            tools:text="Pyra" />
+            app:layout_constraintStart_toEndOf="@+id/element"
+            app:layout_constraintTop_toTopOf="@+id/background"
+            tools:text="Lorem ipsum dolor sit amet" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

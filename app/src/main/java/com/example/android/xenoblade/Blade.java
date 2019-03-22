@@ -18,117 +18,18 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//Must be public to use databinding
-public class Blade extends BaseObservable {
-    private String LOG_TAG = Blade.class.getSimpleName();
-
-    private int pageIndex = -1;
-    private String title = "";
-    private String urlPage = "";
-    private String urlPortrait = "";
-    private String urlElement = "";
-
-    private static final Pattern regexRemoveLink = Pattern.compile("<[^<]*>");
-
-    //https://xenoblade.fandom.com/api/v1/Articles/List?category=Blades&limit=1000
-    //https://xenoblade.fandom.com/api.php?action=query&format=json&pageids=72205&prop=pageprops
-    //https://xenoblade.fandom.com/api/v1/Articles/Details?ids=72205
+public class Blade extends BaseContainer<Blade> {
+    public Blade() {
+        super();
+        LOG_TAG = Blade.class.getName();
+    }
 
     @Override
-    public String toString() {
-        return "Blade{" +
-                "title='" + title + '\'' +
-                "pageIndex='" + pageIndex + '\'' +
-                ", urlPage='" + urlPage + '\'' +
-                ", urlPortrait='" + urlPortrait + '\'' +
-                ", urlElement='" + urlElement + '\'' +
-                '}';
-    }
-
-    public Blade() {
-    }
-
-    //Getters
-    //See: https://codelabs.developers.google.com/codelabs/android-databinding/index.html?index=..%2F..index#6
-    //See: Android Data Binding Library - Update UI using Observable objects: https://www.youtube.com/watch?v=gP_zj-CIBvM
-    @Bindable
-    public String getTitle() {
-        return title;
-    }
-
-    public String getPortrait() {
-        return urlPortrait;
-    }
-
-    public String getElement() {
-        return urlElement;
-    }
-
-    int getPageIndex() {
-        return pageIndex;
-    }
-
-    Uri getPage() {
-        return Uri.parse(urlPage);
-    }
-
-    //Setters
-    Blade setPageIndex(int pageIndex) {
-        this.pageIndex = pageIndex;
-        return this;
-    }
-
-    Blade setTitle(String title) {
-        this.title = title;
-        notifyPropertyChanged(BR.title);
-        return this;
-    }
-
-    Blade setUrlPage(String urlPage) {
-        this.urlPage = urlPage;
-        return this;
-    }
-
-    Blade setPortrait(String urlPortrait) {
-        this.urlPortrait = urlPortrait;
-        return this;
-    }
-
-    Blade setElement(String urlElement) {
-        this.urlElement = urlElement;
-        return this;
-    }
-
-    //Methods
-    static String getJsonUrlList() {
-        return "https://xenoblade.fandom.com/api/v1/Articles/List?category=Blades&limit=1000";
-    }
-
     String getJsonUrlDetails() {
-        if (pageIndex == -1) {
+        if (indexPage == -1) {
             return null;
         }
-        return "https://xenoblade.fandom.com/api.php?action=query&format=json&pageids=" + pageIndex + "&prop=pageprops";
-    }
-
-    /**
-     * Parses JSON data from https://xenoblade.fandom.com/api/v1/Articles/List?category=Blades&limit=1000
-     */
-    boolean parseListData(JSONObject root, JSONObject number) throws JSONException, IOException {
-        String url = number.getString("url");
-        if (url.contains("Category:")) {
-            return false;
-        }
-
-        String title = number.getString("title");
-        if (title.contains(".")) {
-            return false;
-        }
-
-        setPageIndex(number.getInt("id"));
-        setTitle(title);
-        setUrlPage(root.getString("basepath") + url);
-        return (pageIndex != -1) && (!urlPage.isEmpty());
+        return "https://xenoblade.fandom.com/api.php?action=query&format=json&pageids=" + indexPage + "&prop=pageprops";
     }
 
     /**
@@ -136,6 +37,7 @@ public class Blade extends BaseObservable {
      * See: http://www.tutorialspoint.com/android/android_json_parser.htm
      */
     boolean parseInfoData(String jsonResponse) throws JSONException {
+        Log.e(LOG_TAG, "@parseInfoData 2: " + this);
         if (jsonResponse == null) {
             Log.e(LOG_TAG, "Get JSON error");
             return false;
@@ -164,7 +66,7 @@ public class Blade extends BaseObservable {
             JSONObject dataItem = data.getJSONObject(i);
             switch (dataItem.getString("type")) {
                 case "image":
-                    setPortrait(dataItem.getJSONArray("data")
+                    setImage(dataItem.getJSONArray("data")
                             .getJSONObject(0)
                             .getString("url"));
                     continue;
@@ -179,12 +81,12 @@ public class Blade extends BaseObservable {
                         //See: https://stackoverflow.com/questions/6384240/how-to-parse-a-url-from-a-string-in-android/26426891#26426891
                         Matcher matcher = Patterns.WEB_URL.matcher(value.getString("value"));
                         if (matcher.find() && (value.getString("source").equals("element"))) {
-                            setElement(matcher.group());
+                            setSubImage(matcher.group());
                             break;
                         }
                     }
             }
         }
-        return (!urlElement.isEmpty()) && (!urlPortrait.isEmpty());
+        return (!urlSubImage.isEmpty()) && (!urlImage.isEmpty());
     }
 }

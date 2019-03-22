@@ -40,7 +40,7 @@ class QueryUtilities {
     /**
      * Create a private constructor because no one should ever create a {@link QueryUtilities} object.
      * This class is only meant to hold static variables and methods, which can be accessed
-     * directly from the class name QueryUtilities (and an object instance of QueryUtilities is not needed).
+     * directly from the class title QueryUtilities (and an object instance of QueryUtilities is not needed).
      */
     private QueryUtilities() {
     }

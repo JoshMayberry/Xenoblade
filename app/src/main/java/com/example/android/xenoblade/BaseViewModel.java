@@ -16,21 +16,22 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 //See: https://medium.com/@taman.neupane/basic-example-of-livedata-and-viewmodel-14d5af922d0#7e70
 //Use: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#e65b
-class BladeViewModel extends AndroidViewModel {
-    private String LOG_TAG = BladeViewModel.class.getSimpleName();
-    private final MutableLiveData<List<Blade>> bladeList = new MutableLiveData<>();
+class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
+
+    private String LOG_TAG = BaseViewModel.class.getSimpleName();
+    private final MutableLiveData<List<T>> containerList = new MutableLiveData<>();
     private final MutableLiveData<Integer> progress = new MutableLiveData<>();
 
-    BladeViewModel(@NonNull Application application) {
+    BaseViewModel(@NonNull Application application) {
         super(application);
-        loadBladeList();
     }
 
-    LiveData<List<Blade>> getBladeList() {
-        return bladeList;
+    LiveData<List<T>> getContainerList() {
+        return containerList;
     }
 
     //See: https://stackoverflow.com/questions/48239657/how-to-handle-android-livedataviewmodel-with-progressbar-on-screen-rotate/53238717#53238717
@@ -44,22 +45,17 @@ class BladeViewModel extends AndroidViewModel {
      */
     @SuppressLint("StaticFieldLeak")
     //See: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#fb19
-    private void loadBladeList() {
-        new AsyncTask<Void, Integer, List<Blade>>() {
+    void loadContainerList(final int position) {
+        assert position != -1;
+        new AsyncTask<Void, Integer, List<T>>() {
             @Override
-            protected List<Blade> doInBackground(Void... voids) {
-                List<Blade> data = new ArrayList<>();
+            protected List<T> doInBackground(Void... voids) {
+                List<T> data = new ArrayList<>();
 
-//                //FOR DEBUGGING: Show loading wheel
-//                try {
-//                    Thread.sleep(3000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-
-                //Get a list of available blades
+                //Get a list of available containers
                 try {
-                    String jsonResponse = QueryUtilities.makeHttpRequest(Blade.getJsonUrlList());
+                    ContainerUtils.Group orderGroup = ContainerUtils.orderList.get(position);
+                    String jsonResponse = QueryUtilities.makeHttpRequest(orderGroup.urlJsonList);
                     if (jsonResponse == null) {
                         Log.e(LOG_TAG, "Get JSON error");
                         return null;
@@ -69,14 +65,14 @@ class BladeViewModel extends AndroidViewModel {
                     JSONArray items = root.getJSONArray("items");
 
                     for (int i = 0; i < items.length(); i++) {
-                        Blade blade = new Blade();
-                        if (!blade.parseListData(root, items.getJSONObject(i))) {
+                        T container = (T) orderGroup.newInstance();
+                        if (!container.parseListData(root, items.getJSONObject(i))) {
                             continue;
                         }
-                        if (!blade.parseInfoData(QueryUtilities.makeHttpRequest(blade.getJsonUrlDetails()))) {
+                        if (!container.parseInfoData(QueryUtilities.makeHttpRequest(container.getJsonUrlDetails()))) {
                             continue;
                         }
-                        data.add(blade);
+                        data.add(container);
                         publishProgress(data.size());
                     }
 
@@ -99,8 +95,8 @@ class BladeViewModel extends AndroidViewModel {
             }
 
             @Override
-            protected void onPostExecute(List<Blade> data) {
-                bladeList.setValue(data);
+            protected void onPostExecute(List<T> data) {
+                containerList.setValue(data);
             }
         }.execute();
     }

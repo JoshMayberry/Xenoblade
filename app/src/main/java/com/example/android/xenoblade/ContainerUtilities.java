@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Utility class that is used to organize and get pre-initialization information
- * about children of {@link BaseContainer}.
+ * A Utility class that is used to organize and get pre-initialization information about children of {@link BaseContainer}.
+ * This is needed because I cannot override static methods for {@link BaseContainer}.
  */
 class ContainerUtilities {
     private static final String LOG_TAG = QueryUtilities.class.getSimpleName();

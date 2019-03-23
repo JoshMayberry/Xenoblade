@@ -15,7 +15,11 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 //See: https://medium.com/@taman.neupane/basic-example-of-livedata-and-viewmodel-14d5af922d0#7e70
 //Use: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#e65b
@@ -49,7 +53,7 @@ class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
         new AsyncTask<Void, Integer, List<T>>() {
             @Override
             protected List<T> doInBackground(Void... voids) {
-                List<T> data = new ArrayList<>();
+                Map<String, T> dataMap = new HashMap<>();
 
                 //Get a list of available containers
                 try {
@@ -71,8 +75,15 @@ class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
                         if (containerList == null) {
                             continue;
                         }
-                        data.addAll(containerList);
-                        publishProgress(data.size());
+
+                        //Do not add duplicates
+                        for (T item : containerList) {
+                            if (!dataMap.containsKey(item.title.trim())) {
+                                dataMap.put(item.title.trim(), item);
+                            }
+                        }
+
+                        publishProgress(dataMap.size());
                     }
 
                 } catch (IOException error) {
@@ -82,6 +93,17 @@ class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
                     Log.e(LOG_TAG, "Parse JSON error", error);
                     return null;
                 }
+
+                //Sort Results
+                //See: https://stackoverflow.com/questions/1026723/how-to-convert-a-map-to-list-in-java/1026736#1026736
+                //Use: https://stackoverflow.com/questions/6826112/sorting-names-in-a-list-alphabetically/6826149#6826149
+                List<T> data = new ArrayList<>(dataMap.values());
+                Collections.sort(data, new Comparator<T>() {
+                    @Override
+                    public int compare(T item1, T item2) {
+                        return item1.title.compareToIgnoreCase(item2.title);
+                    }
+                });
                 return data;
             }
 

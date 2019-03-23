@@ -91,7 +91,7 @@ public class BaseFragment<T extends BaseContainer<T>> extends Fragment {
 
                 binding.counter.setVisibility(View.GONE);
                 binding.loadingIndicator.setVisibility(View.GONE);
-                binding.emptyView.setText(R.string.blade_error);
+                binding.emptyView.setText(ContainerUtilities.orderList.get(position).error);
 
                 baseAdapter.clear();
                 if (!containerList.isEmpty()) {

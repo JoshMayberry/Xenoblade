@@ -5,9 +5,12 @@ import android.databinding.Bindable;
 import android.net.Uri;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -111,6 +114,37 @@ public class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
         return (T) this;
     }
 
+    /**
+     * Can be overridden to parse it differently
+     */
+    List<T> getContainerList(JSONObject root, JSONObject number) throws JSONException, IOException {
+        List<T> data = new ArrayList<>();
+        if (!populateContainerInfo(root, number)) {
+            return null;
+        }
+        data.add((T) this);
+        return data;
+    }
+
+    /**
+     * Can be overridden to parse it differently
+     */
+    boolean populateContainerInfo(JSONObject root, JSONObject number) throws JSONException, IOException {
+        if (!parseListData(root, number)) {
+            return false;
+        }
+
+        String jsonResponseDetails = getJsonUrlDetails();
+        if (jsonResponseDetails == null) {
+            return false;
+        }
+
+        return parseInfoData(QueryUtilities.makeHttpRequest(jsonResponseDetails));
+    }
+
+    /**
+     * Can be overridden to parse it differently
+     */
     String getJsonUrlDetails() {
         if (indexPage == -1) {
             return null;
@@ -122,6 +156,7 @@ public class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
      * Can be overridden to parse it differently
      */
     boolean parseListData(JSONObject root, JSONObject number) throws JSONException {
+//        Log.e(LOG_TAG, "parseListData:" + number);
         String url = number.getString("url");
         if (url.contains("Category:")) {
             return false;
@@ -142,7 +177,6 @@ public class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
      * Can be overridden to parse it differently
      */
     boolean parseInfoData(String jsonResponse) throws JSONException {
-        Log.e(LOG_TAG, "@parseInfoData 1: " + this);
         JSONObject items = new JSONObject(jsonResponse)
                 .getJSONObject("items");
         JSONObject number = items.getJSONObject(items.keys().next());

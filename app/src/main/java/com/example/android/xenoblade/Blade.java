@@ -36,8 +36,8 @@ public class Blade extends BaseContainer<Blade> {
      * Parses JSON data from https://xenoblade.fandom.com/api.php?action=query&format=json&pageids=" + pageIndex + "&prop=pageprops"
      * See: http://www.tutorialspoint.com/android/android_json_parser.htm
      */
+    @Override
     boolean parseInfoData(String jsonResponse) throws JSONException {
-        Log.e(LOG_TAG, "@parseInfoData 2: " + this);
         if (jsonResponse == null) {
             Log.e(LOG_TAG, "Get JSON error");
             return false;

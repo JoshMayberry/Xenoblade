@@ -18,16 +18,16 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return ContainerUtils.orderList.get(position).fragment.setPosition(position);
+        return ContainerUtilities.orderList.get(position).fragment.setPosition(position);
     }
 
     @Override
     public int getCount() {
-        return ContainerUtils.orderList.size();
+        return ContainerUtilities.orderList.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return context.getString(ContainerUtils.orderList.get(position).title);
+        return context.getString(ContainerUtilities.orderList.get(position).title);
     }
 }

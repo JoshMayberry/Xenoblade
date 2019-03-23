@@ -16,7 +16,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 //See: https://medium.com/@taman.neupane/basic-example-of-livedata-and-viewmodel-14d5af922d0#7e70
 //Use: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#e65b
@@ -54,25 +53,25 @@ class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
 
                 //Get a list of available containers
                 try {
-                    ContainerUtils.Group orderGroup = ContainerUtils.orderList.get(position);
-                    String jsonResponse = QueryUtilities.makeHttpRequest(orderGroup.urlJsonList);
-                    if (jsonResponse == null) {
+                    ContainerUtilities.Group orderGroup = ContainerUtilities.orderList.get(position);
+                    String jsonResponseList = QueryUtilities.makeHttpRequest(orderGroup.urlJsonList);
+
+                    if (jsonResponseList == null) {
                         Log.e(LOG_TAG, "Get JSON error");
                         return null;
                     }
 
-                    JSONObject root = new JSONObject(jsonResponse);
+                    JSONObject root = new JSONObject(jsonResponseList);
                     JSONArray items = root.getJSONArray("items");
 
                     for (int i = 0; i < items.length(); i++) {
                         T container = (T) orderGroup.newInstance();
-                        if (!container.parseListData(root, items.getJSONObject(i))) {
+
+                        List<T> containerList = container.getContainerList(root, items.getJSONObject(i));
+                        if (containerList == null) {
                             continue;
                         }
-                        if (!container.parseInfoData(QueryUtilities.makeHttpRequest(container.getJsonUrlDetails()))) {
-                            continue;
-                        }
-                        data.add(container);
+                        data.addAll(containerList);
                         publishProgress(data.size());
                     }
 

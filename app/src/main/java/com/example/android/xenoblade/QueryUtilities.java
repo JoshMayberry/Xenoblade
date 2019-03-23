@@ -33,10 +33,6 @@ import java.util.ArrayList;
 class QueryUtilities {
     private static final String LOG_TAG = QueryUtilities.class.getSimpleName();
 
-    //https://xenoblade.fandom.com/api/v1/Articles/List?category=XC2_Items&limit=1000
-    //https://xenoblade.fandom.com/api.php?action=query&format=json&pageids=72759&prop=revisions&rvlimit=1&rvprop=content
-    //https://xenoblade.fandom.com/api/v1/Articles/List?category=Quests_by_Location&limit=1000
-
     /**
      * Create a private constructor because no one should ever create a {@link QueryUtilities} object.
      * This class is only meant to hold static variables and methods, which can be accessed
@@ -44,20 +40,6 @@ class QueryUtilities {
      */
     private QueryUtilities() {
     }
-
-//    static ArrayList<Blade> getBlades() {
-//        ArrayList<Blade> bladeList = new ArrayList<>();
-//        bladeList.add(new Blade().parse_sample());
-//        bladeList.add(new Blade().parse_sample());
-//        bladeList.add(new Blade().parse_sample());
-//        return bladeList;
-//    }
-//
-//    static ArrayList<Location> getLocations() {
-//        ArrayList<Location> locationList = new ArrayList<>();
-//        locationList.add(new Location().parse_sample());
-//        return locationList;
-//    }
 
     /**
      * Returns new URL object from the given string URL.

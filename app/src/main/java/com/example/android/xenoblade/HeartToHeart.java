@@ -45,7 +45,7 @@ class HeartToHeart extends BaseContainer<HeartToHeart> {
         }
 
         setIndexPage(number.getInt("id"));
-        setTitle(title);
+        setTitle(number.getString("title"));
         setPage(root.getString("basepath") + url);
         return (indexPage != -1) && (!urlPage.isEmpty());
     }

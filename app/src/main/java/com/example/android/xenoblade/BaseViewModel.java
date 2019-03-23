@@ -21,11 +21,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//See: https://medium.com/@taman.neupane/basic-example-of-livedata-and-viewmodel-14d5af922d0#7e70
-//Use: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#e65b
+/**
+ * Gathers data from the internet for {@link BaseAdapter} to populate a {@link BaseFragment} with.
+ * @param <T> What child of {@link BaseContainer} to use for the fragment
+ * @see Item
+ * @see Blade
+ * @see Location
+ * @see HeartToHeart
+ * See: https://medium.com/@taman.neupane/basic-example-of-livedata-and-viewmodel-14d5af922d0#7e70
+ * Use: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#e65b
+ */
 class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
-
     private String LOG_TAG = BaseViewModel.class.getSimpleName();
+
     private final MutableLiveData<List<T>> containerList = new MutableLiveData<>();
     private final MutableLiveData<Integer> progress = new MutableLiveData<>();
 
@@ -43,34 +51,42 @@ class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
     }
 
     /**
-     * Loads a list of blades.
-     * Clicking on a blade will open the fandom article for it.
+     * The {@link android.content.Loader} is deprecated;
+     * it is suggested that a combination {@link AndroidViewModel} and {@link LiveData} be used instead.
+     * See: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#788a
+     *
+     * An {@link AsyncTask} is used to run a background thread.
+     * Apparently, when used with an {@link AndroidViewModel} and {@link LiveData}, there is no memory leak problem.
+     * See: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#fb19
      */
     @SuppressLint("StaticFieldLeak")
-    //See: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#fb19
     void loadContainerList(final int position) {
-        assert position != -1;
+        if (position == -1) throw new AssertionError();
         new AsyncTask<Void, Integer, List<T>>() {
+            /**
+             * Gets a list of {@link BaseContainer} objects from the internet
+             */
             @Override
             protected List<T> doInBackground(Void... voids) {
+                //Containers are stored in a dictionary in order to avoid duplicates
                 Map<String, T> dataMap = new HashMap<>();
 
-                //Get a list of available containers
                 try {
+                    //Get the initial JSON list of containers
                     ContainerUtilities.Group orderGroup = ContainerUtilities.orderList.get(position);
                     String jsonResponseList = QueryUtilities.makeHttpRequest(orderGroup.urlJsonList);
-
                     if (jsonResponseList == null) {
                         Log.e(LOG_TAG, "Get JSON error");
                         return null;
                     }
 
+                    //Generate a list of {@link BaseContainer} objects
                     JSONObject root = new JSONObject(jsonResponseList);
                     JSONArray items = root.getJSONArray("items");
-
                     for (int i = 0; i < items.length(); i++) {
                         T container = (T) orderGroup.newInstance();
 
+                        //Account for sub-containers
                         List<T> containerList = container.getContainerList(root, items.getJSONObject(i));
                         if (containerList == null) {
                             continue;
@@ -83,14 +99,12 @@ class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
                             }
                         }
 
+                        //Update Progress
                         publishProgress(dataMap.size());
                     }
 
-                } catch (IOException error) {
-                    Log.e(LOG_TAG, "IO Error", error);
-                    return null;
-                } catch (JSONException error) {
-                    Log.e(LOG_TAG, "Parse JSON error", error);
+                } catch (IOException | JSONException error) {
+                    Log.e(LOG_TAG, "Unknown Error", error);
                     return null;
                 }
 
@@ -107,6 +121,9 @@ class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
                 return data;
             }
 
+            /**
+             * Shows how many {@link BaseContainer} objects have been found on the UI
+             */
             @Override
             protected void onProgressUpdate(Integer... valueList) {
                 if (valueList.length < 1) {
@@ -115,6 +132,9 @@ class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
                 progress.setValue(valueList[0]);
             }
 
+            /**
+             * Applies the downloaded list of {@link BaseContainer} objects to the UI
+             */
             @Override
             protected void onPostExecute(List<T> data) {
                 containerList.setValue(data);

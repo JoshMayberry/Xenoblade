@@ -14,14 +14,22 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 //See: https://www.javacodegeeks.com/2013/07/java-generics-tutorial-example-class-interface-methods-wildcards-and-much-more.html#generics-naming-convention
+/**
+ * Handles recycling views on a {@link BaseFragment}
+ * @param <T> What child of {@link BaseContainer} to use for the fragment
+ * @see Item
+ * @see Blade
+ * @see Location
+ * @see HeartToHeart
+ */
 class BaseAdapter<T extends BaseContainer<T>> extends ArrayAdapter<T> {
     String LOG_TAG = BaseAdapter.class.getSimpleName();
+
+    private LayoutInflater inflater;
 
     BaseAdapter(Context context, List<T> containerList) {
         super(context, 0, containerList);
     }
-
-    private LayoutInflater inflater;
 
     //See: https://github.com/nomanr/android-databinding-example/blob/master/app/src/main/java/com/databinding/example/databindingexample/adapters/SimpleAdapter.java
     //Use: https://stackoverflow.com/questions/40557087/how-can-i-use-android-databinding-in-a-listview-and-still-use-a-viewholder-patte/40557175#40557175
@@ -37,6 +45,8 @@ class BaseAdapter<T extends BaseContainer<T>> extends ArrayAdapter<T> {
         }
 
         //The data binding does not seem to work with automatically changing the items... So this will be used for now...
+        //Ideally, the code from here to the end will be gone
+        //I think it does not work because the containers are populated before the views are created. This means that the setter methods are called before they can notify the binding that a change has taken place?
         T container = getItem(position);
         if (container != null) {
             binding.title.setText(container.getTitle());

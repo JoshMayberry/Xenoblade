@@ -1,11 +1,5 @@
 package com.example.android.xenoblade;
 
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.util.Log;
 import android.util.Patterns;
 
@@ -13,17 +7,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+/**
+ * A container for information about Blades (companion characters that lend you power).
+ */
 public class Blade extends BaseContainer<Blade> {
     public Blade() {
         super();
         LOG_TAG = Blade.class.getName();
     }
 
+    /**
+     * Use the info box of the page to gather details.
+     */
     @Override
     String getJsonUrlDetails() {
         if (indexPage == -1) {
@@ -33,11 +30,11 @@ public class Blade extends BaseContainer<Blade> {
     }
 
     /**
-     * Parses JSON data from https://xenoblade.fandom.com/api.php?action=query&format=json&pageids=" + pageIndex + "&prop=pageprops"
+     * Parses the info box for what element the blade is.
      * See: http://www.tutorialspoint.com/android/android_json_parser.htm
      */
     @Override
-    boolean parseInfoData(String jsonResponse) throws JSONException {
+    boolean parseDetailData(String jsonResponse) throws JSONException {
         if (jsonResponse == null) {
             Log.e(LOG_TAG, "Get JSON error");
             return false;

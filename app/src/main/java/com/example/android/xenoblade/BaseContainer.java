@@ -3,21 +3,31 @@ package com.example.android.xenoblade;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.net.Uri;
-import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-//Use: https://stackoverflow.com/questions/18204190/java-abstract-classes-returning-this-pointer-for-derived-classes/39897781#39897781
 //Must be public to use databinding
-public class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
+/**
+ * Holds data pertaining to a list item for a {@link BaseAdapter}
+ * This is a Generic class that is meant to be extended by a child class.
+ *
+ * Some methods (such as {@link #getContainerList}) have a default action.
+ * They can be overridden by children to modify behavior.
+ *
+ * @param <T> What child to use for the fragment
+ * @see Item
+ * @see Blade
+ * @see Location
+ * @see HeartToHeart
+ *
+ * Use: https://stackoverflow.com/questions/18204190/java-abstract-classes-returning-this-pointer-for-derived-classes/39897781#39897781
+ */
+public abstract class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
     String LOG_TAG = BaseContainer.class.getSimpleName();
 
     int indexPage = -1;
@@ -26,13 +36,6 @@ public class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
     String urlPage = "";
     String urlImage = "";
     String urlSubImage = "";
-
-    static final Pattern regexRemoveLink = Pattern.compile("<[^<]*>");
-
-
-    //https://xenoblade.fandom.com/api/v1/Articles/List?category=Blades&limit=1000
-    //https://xenoblade.fandom.com/api.php?action=query&format=json&pageids=72205&prop=pageprops
-    //https://xenoblade.fandom.com/api/v1/Articles/Details?ids=72205
 
     @Override
     public String toString() {
@@ -95,7 +98,7 @@ public class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
 
     T setSubText(String text) {
         this.subText = text;
-//        notifyPropertyChanged(BR.subText);
+        notifyPropertyChanged(BR.subText);
         return (T) this;
     }
 
@@ -115,7 +118,10 @@ public class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
     }
 
     /**
-     * Can be overridden to parse it differently
+     * Returns a list of sub-items for this container.
+     * If there are no sub items, then just return a list of length 1 that contains {@code this}.
+     * Can be overridden to parse the {@link JSONObject}s differently.
+     * @see #populateContainerInfo
      */
     List<T> getContainerList(JSONObject root, JSONObject number) throws JSONException, IOException {
         List<T> data = new ArrayList<>();
@@ -127,7 +133,10 @@ public class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
     }
 
     /**
-     * Can be overridden to parse it differently
+     * Populates this container with data from the provided {@link JSONObject}s.
+     * Can be overridden to parse the {@link JSONObject}s differently.
+     * @see #parseListData
+     * @see #parseDetailData
      */
     boolean populateContainerInfo(JSONObject root, JSONObject number) throws JSONException, IOException {
         if (!parseListData(root, number)) {
@@ -139,11 +148,13 @@ public class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
             return false;
         }
 
-        return parseInfoData(QueryUtilities.makeHttpRequest(jsonResponseDetails));
+        return parseDetailData(QueryUtilities.makeHttpRequest(jsonResponseDetails));
     }
 
     /**
-     * Can be overridden to parse it differently
+     * What URL to get detailed information about this container from.
+     * Can be overridden to parse the {@link JSONObject}s differently.
+     * @see #parseDetailData
      */
     String getJsonUrlDetails() {
         if (indexPage == -1) {
@@ -153,15 +164,18 @@ public class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
     }
 
     /**
-     * Can be overridden to parse it differently
+     * Gets basic information from a list-style {@link JSONObject}.
+     * Can be overridden to parse the {@link JSONObject}s differently.
+     * @see ContainerUtilities.Group#urlJsonList
      */
     boolean parseListData(JSONObject root, JSONObject number) throws JSONException {
-//        Log.e(LOG_TAG, "parseListData:" + number);
+        //Remove category pages
         String url = number.getString("url");
         if (url.contains("Category:")) {
             return false;
         }
 
+        //Remove image pages
         String title = number.getString("title");
         if (title.contains(".")) {
             return false;
@@ -174,9 +188,11 @@ public class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
     }
 
     /**
-     * Can be overridden to parse it differently
+     * Gets detailed information from a single-style {@link JSONObject}.
+     * Can be overridden to parse the {@link JSONObject}s differently.
+     * @see #getJsonUrlDetails
      */
-    boolean parseInfoData(String jsonResponse) throws JSONException {
+    boolean parseDetailData(String jsonResponse) throws JSONException {
         JSONObject items = new JSONObject(jsonResponse)
                 .getJSONObject("items");
         JSONObject number = items.getJSONObject(items.keys().next());

@@ -26,23 +26,18 @@ import java.util.ArrayList;
 //https://xenoblade.fandom.com/api/v1/Articles/List?category=XC2_Items&limit=1000
 
 /**
- * Helper methods related to requesting and receiving earthquake data from the Fandom for Xenoblade Chronicles 2.
+ * A utility class that is used to get information from the internet.
  * See: http://www.wikia.com/api/v1#!/Articles/getList_get_2
  * Use: https://gist.github.com/udacityandroid/10892631f57f9f073ab9e1d11cfaafcf
  */
 class QueryUtilities {
     private static final String LOG_TAG = QueryUtilities.class.getSimpleName();
 
-    /**
-     * Create a private constructor because no one should ever create a {@link QueryUtilities} object.
-     * This class is only meant to hold static variables and methods, which can be accessed
-     * directly from the class title QueryUtilities (and an object instance of QueryUtilities is not needed).
-     */
     private QueryUtilities() {
     }
 
     /**
-     * Returns new URL object from the given string URL.
+     * Formats a string as a URL object.
      */
     static URL createUrl(String stringUrl) {
         try {
@@ -54,7 +49,7 @@ class QueryUtilities {
     }
 
     /**
-     * Make an HTTP request to the given URL and return a String as the response.
+     * Makes an HTTP request to the given URL and return a String as the response.
      */
     static String makeHttpRequest(String requestUrl) throws IOException {
         if (TextUtils.isEmpty(requestUrl)) {
@@ -81,8 +76,8 @@ class QueryUtilities {
             } else {
                 Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
             }
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving the earthquake JSON results.", e);
+        } catch (IOException error) {
+            Log.e(LOG_TAG, "Problem retrieving the earthquake JSON results.", error);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

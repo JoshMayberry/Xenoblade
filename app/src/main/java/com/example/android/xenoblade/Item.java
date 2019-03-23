@@ -1,6 +1,5 @@
 package com.example.android.xenoblade;
 
-import android.net.Uri;
 import android.util.Log;
 import android.util.Patterns;
 
@@ -14,6 +13,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A container for information about different pouch items
+ */
 class Item extends BaseContainer<Item> {
     private static final Pattern regexGetCategory = Pattern.compile("Category:(.*)");
     private static final Pattern regexGetPrice = Pattern.compile("(\\S*).*title\\W*(\\w*)");
@@ -24,7 +26,7 @@ class Item extends BaseContainer<Item> {
     }
 
     /**
-     * Instead of adding this item, add the items that are linked on it's page.
+     * Instead of adding this item, add the items that are linked on its page.
      */
     @Override
     List<Item> getContainerList(JSONObject root, JSONObject number) throws JSONException, IOException {
@@ -45,6 +47,7 @@ class Item extends BaseContainer<Item> {
         JSONObject subRoot = new JSONObject(jsonResponseList);
         JSONArray subItems = subRoot.getJSONArray("items");
 
+        //Populate sub-items
         List<Item> data = new ArrayList<>();
         for (int i = 0; i < subItems.length(); i++) {
             Item container = new Item();
@@ -59,7 +62,7 @@ class Item extends BaseContainer<Item> {
     }
 
     /**
-     * Allows sub items to use the default criteria for retrieving a list of usable items.
+     * Allows sub-items to use the default criteria for retrieving a list of usable items.
      */
     List<Item> getContainerList(JSONObject root, JSONObject number, boolean isSubItem) throws IOException, JSONException {
         if (isSubItem) {
@@ -69,6 +72,9 @@ class Item extends BaseContainer<Item> {
         }
     }
 
+    /**
+     * Use the info box of the page to gather details.
+     */
     @Override
     String getJsonUrlDetails() {
         if (indexPage == -1) {
@@ -77,8 +83,12 @@ class Item extends BaseContainer<Item> {
         return "https://xenoblade.fandom.com/api.php?action=query&format=json&pageids=" + indexPage + "&prop=pageprops";
     }
 
+    /**
+     * Parses the info box for the item's cost and rarity.
+     * See: http://www.tutorialspoint.com/android/android_json_parser.htm
+     */
     @Override
-    boolean parseInfoData(String jsonResponse) throws JSONException {
+    boolean parseDetailData(String jsonResponse) throws JSONException {
         if (jsonResponse == null) {
             Log.e(LOG_TAG, "Get JSON error");
             return false;

@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return ContainerUtilities.orderList.get(position).fragment.setPosition(position);
+            return ContainerUtilities.orderList.get(position).fragment;
         }
 
         @Override

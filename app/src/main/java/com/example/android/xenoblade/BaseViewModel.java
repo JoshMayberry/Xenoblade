@@ -63,7 +63,11 @@ public class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel 
      */
     @SuppressLint("StaticFieldLeak")
     void loadContainerList(final int position) {
-        if (position == -1) throw new AssertionError();
+        //Account for rotations
+        if (containerList.getValue() != null) {
+            return;
+        }
+
         new AsyncTask<Void, Integer, List<T>>() {
             /**
              * Gets a list of {@link BaseContainer} objects from the internet

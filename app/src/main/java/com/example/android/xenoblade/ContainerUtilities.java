@@ -72,28 +72,28 @@ class ContainerUtilities {
                     .setCls(Blade.class)
                     .setTitle(R.string.blade_title)
                     .setError(R.string.blade_error)
-                    .setFragment(new BaseFragment<Blade>())
+                    .setFragment(new BladeFragment())
                     .setUrlJsonList("https://xenoblade.fandom.com/api/v1/Articles/List?category=Blades&limit=1000"));
 
             add(new Group()
                     .setCls(Location.class)
                     .setTitle(R.string.location_title)
                     .setError(R.string.location_error)
-                    .setFragment(new BaseFragment<Location>())
+                    .setFragment(new LocationFragment())
                     .setUrlJsonList("https://xenoblade.fandom.com/api/v1/Articles/List?category=XC2_Locations&limit=1000"));
 
             add(new Group()
                     .setCls(HeartToHeart.class)
                     .setTitle(R.string.heart_title)
                     .setError(R.string.heart_error)
-                    .setFragment(new BaseFragment<HeartToHeart>())
+                    .setFragment(new HeartToHeartFragment())
                     .setUrlJsonList("https://xenoblade.fandom.com/api/v1/Articles/List?category=XC2_Heart-to-Hearts_by_Character&limit=1000"));
 
             add(new Group()
                     .setCls(Item.class)
                     .setTitle(R.string.item_title)
                     .setError(R.string.item_error)
-                    .setFragment(new BaseFragment<Item>())
+                    .setFragment(new ItemFragment())
                     .setUrlJsonList("https://xenoblade.fandom.com/api/v1/Articles/List?category=XC2_Pouch_Items&limit=1000"));
         }
     };

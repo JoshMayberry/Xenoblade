@@ -51,7 +51,6 @@ public class BaseFragment<T extends BaseContainer<T>> extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (position == -1) throw new AssertionError();
         Context context = getContext();
 
         //See: https://stackoverflow.com/questions/34706399/how-to-use-data-binding-with-fragment/40527833#40527833

@@ -43,7 +43,7 @@ public class BaseFragment<T extends BaseContainer<T>> extends Fragment {
      * Must be called so the fragment knows which element to use from {@link ContainerUtilities#orderList}.
      * @param position Which index in the TabLayout {@link MainActivity.MyFragmentPagerAdapter} this fragment is
      */
-    BaseFragment setPosition(int position) {
+    public BaseFragment setPosition(int position) {
         this.position = position;
         return this;
     }

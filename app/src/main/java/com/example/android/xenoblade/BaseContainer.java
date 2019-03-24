@@ -49,7 +49,7 @@ public abstract class BaseContainer<T extends BaseContainer<T>> extends BaseObse
                 '}';
     }
 
-    BaseContainer() {
+    public BaseContainer() {
     }
 
     //Getters

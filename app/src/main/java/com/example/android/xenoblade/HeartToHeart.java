@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 /**
  * A container for information about Heart-to-Heart Events.
  */
-class HeartToHeart extends BaseContainer<HeartToHeart> {
+public class HeartToHeart extends BaseContainer<HeartToHeart> {
     private static final Pattern regexGetCategory = Pattern.compile("Category:(.*)");
 
     public HeartToHeart() {

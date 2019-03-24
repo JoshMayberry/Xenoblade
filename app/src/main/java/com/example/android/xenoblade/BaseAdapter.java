@@ -22,12 +22,12 @@ import java.util.List;
  * @see Location
  * @see HeartToHeart
  */
-class BaseAdapter<T extends BaseContainer<T>> extends ArrayAdapter<T> {
+public class BaseAdapter<T extends BaseContainer<T>> extends ArrayAdapter<T> {
     String LOG_TAG = BaseAdapter.class.getSimpleName();
 
     private LayoutInflater inflater;
 
-    BaseAdapter(Context context, List<T> containerList) {
+    public BaseAdapter(Context context, List<T> containerList) {
         super(context, 0, containerList);
     }
 

@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//Class and constructor must be public to potentially solve a crash the grader had
+//See: https://stackoverflow.com/questions/44998051/cannot-create-an-instance-of-class-viewmodel/44998087#44998087
 /**
  * Gathers data from the internet for {@link BaseAdapter} to populate a {@link BaseFragment} with.
  * @param <T> What child of {@link BaseContainer} to use for the fragment
@@ -31,13 +33,13 @@ import java.util.Map;
  * See: https://medium.com/@taman.neupane/basic-example-of-livedata-and-viewmodel-14d5af922d0#7e70
  * Use: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#e65b
  */
-class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
+public class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
     private String LOG_TAG = BaseViewModel.class.getSimpleName();
 
     private final MutableLiveData<List<T>> containerList = new MutableLiveData<>();
     private final MutableLiveData<Integer> progress = new MutableLiveData<>();
 
-    BaseViewModel(@NonNull Application application) {
+    public BaseViewModel(@NonNull Application application) {
         super(application);
     }
 

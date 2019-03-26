@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 /**
  * A container for information about Blades (companion characters that lend you power).
  */
-public class Blade extends BaseContainer<Blade> {
+public class Blade extends GenericContainer<Blade> {
     public Blade() {
         super();
         LOG_TAG = Blade.class.getName();

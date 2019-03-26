@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocationFragment extends BaseFragment<Location> {
+public class LocationFragment extends GenericFragment<Location> {
     public LocationFragment() {
         super();
         position = 1;

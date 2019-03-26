@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HeartToHeartFragment extends BaseFragment<HeartToHeart> {
+public class HeartToHeartFragment extends GenericFragment<HeartToHeart> {
     public HeartToHeartFragment() {
         super();
         position = 2;

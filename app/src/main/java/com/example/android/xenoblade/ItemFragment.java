@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemFragment extends BaseFragment<Item> {
+public class ItemFragment extends GenericFragment<Item> {
     public ItemFragment() {
         super();
         position = 3;

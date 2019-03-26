@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BladeFragment extends BaseFragment<Blade> {
+public class BladeFragment extends GenericFragment<Blade> {
     public BladeFragment() {
         super();
         position = 0;

@@ -27,27 +27,27 @@ import java.util.List;
 //See: http://www.tutorialspoint.com/java/java_documentation.htm
 
 /**
- * Displays a list of {@link BaseContainer} objects.
+ * Displays a list of {@link GenericContainer} objects.
  *
- * @param <T> What child of {@link BaseContainer} to use for the fragment
+ * @param <T> What child of {@link GenericContainer} to use for the fragment
  * @see Item
  * @see Blade
  * @see Location
  * @see HeartToHeart
  */
-public abstract class BaseFragment<T extends BaseContainer<T>> extends Fragment {
-    public String LOG_TAG = BaseFragment.class.getSimpleName();
+public abstract class GenericFragment<T extends GenericContainer<T>> extends Fragment {
+    public String LOG_TAG = GenericFragment.class.getSimpleName();
     FragmentBaseBinding binding;
 
     int position = -1;
-    BaseAdapter<T> baseAdapter;
+    GenericAdapter<T> baseAdapter;
 
     /**
      * Must be called so the fragment knows which element to use from {@link ContainerUtilities#orderList}.
      *
      * @param position Which index in the TabLayout {@link MainActivity.MyFragmentPagerAdapter} this fragment is
      */
-    public BaseFragment setPosition(int position) {
+    public GenericFragment setPosition(int position) {
         this.position = position;
         return this;
     }
@@ -74,30 +74,32 @@ public abstract class BaseFragment<T extends BaseContainer<T>> extends Fragment 
     //See: https://developer.android.com/training/basics/network-ops/connecting.html
     //Use: https://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html#DetermineConnection
     boolean checkOnline(Context context) {
-        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnected();
+        //Use sample data only for grader
+        return false;
+//        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+//        return networkInfo != null && networkInfo.isConnected();
     }
 
     void reset(Context context) {
         binding.loadingIndicator.setVisibility(View.VISIBLE);
         binding.emptyView.setVisibility(View.VISIBLE);
-        ViewModelProviders.of(this).get(BaseViewModel.class).reset();
+        ViewModelProviders.of(this).get(GenericViewModel.class).reset();
         if (checkOnline(context)) {
             onlineSetup(context);
         } else {
+            Toast.makeText(context, R.string.internet_error, Toast.LENGTH_SHORT).show();
             offlineSetup(context);
         }
     }
 
     void offlineSetup(final Context context) {
         Log.e(LOG_TAG, "No Network Connection");
-        Toast.makeText(context, R.string.internet_error, Toast.LENGTH_SHORT).show();
         binding.retry.setVisibility(View.VISIBLE);
         binding.loadingIndicator.setVisibility(View.GONE);
         binding.emptyView.setVisibility(View.GONE);
 
-        baseAdapter = new BaseAdapter(context, getOffline(context));
+        baseAdapter = new GenericAdapter(context, getOffline(context));
         binding.list.setAdapter(baseAdapter);
 
         //Display error message
@@ -117,7 +119,7 @@ public abstract class BaseFragment<T extends BaseContainer<T>> extends Fragment 
         });
     }
 
-    void onlineSetup(Context context) {
+    void onlineSetup(final Context context) {
         binding.retry.setVisibility(View.GONE);
         binding.loadingIndicator.setVisibility(View.VISIBLE);
         binding.emptyView.setVisibility(View.VISIBLE);
@@ -128,7 +130,7 @@ public abstract class BaseFragment<T extends BaseContainer<T>> extends Fragment 
         binding.list.setEmptyView(binding.emptyView);
 
         //Create Adapter
-        baseAdapter = new BaseAdapter(context, new ArrayList<T>());
+        baseAdapter = new GenericAdapter(context, new ArrayList<T>());
         binding.list.setAdapter(baseAdapter);
 
         //Open fandom page when an item is clicked
@@ -151,7 +153,7 @@ public abstract class BaseFragment<T extends BaseContainer<T>> extends Fragment 
         //Populate list
         //See: https://stackoverflow.com/questions/49405616/cannot-resolve-symbol-viewmodelproviders-on-appcompatactivity/49407157#49407157
         //Use: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#e65b
-        BaseViewModel model = ViewModelProviders.of(this).get(BaseViewModel.class);
+        GenericViewModel model = ViewModelProviders.of(this).get(GenericViewModel.class);
         model.loadContainerList(position);
         model.getContainerList().observe(this, new Observer<List<T>>() {
             @Override

@@ -6,6 +6,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -24,9 +25,11 @@ import java.util.Map;
 
 //Class and constructor must be public to potentially solve a crash the grader had
 //See: https://stackoverflow.com/questions/44998051/cannot-create-an-instance-of-class-viewmodel/44998087#44998087
+
 /**
- * Gathers data from the internet for {@link BaseAdapter} to populate a {@link BaseFragment} with.
- * @param <T> What child of {@link BaseContainer} to use for the fragment
+ * Gathers data from the internet for {@link GenericAdapter} to populate a {@link GenericFragment} with.
+ *
+ * @param <T> What child of {@link GenericContainer} to use for the fragment
  * @see Item
  * @see Blade
  * @see Location
@@ -34,13 +37,13 @@ import java.util.Map;
  * See: https://medium.com/@taman.neupane/basic-example-of-livedata-and-viewmodel-14d5af922d0#7e70
  * Use: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#e65b
  */
-public class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel {
-    private String LOG_TAG = BaseViewModel.class.getSimpleName();
+public class GenericViewModel<T extends GenericContainer<T>> extends AndroidViewModel {
+    private String LOG_TAG = GenericViewModel.class.getSimpleName();
 
     private final MutableLiveData<List<T>> containerList = new MutableLiveData<>();
     private final MutableLiveData<Integer> progress = new MutableLiveData<>();
 
-    public BaseViewModel(@NonNull Application application) {
+    public GenericViewModel(@NonNull Application application) {
         super(application);
     }
 
@@ -62,7 +65,7 @@ public class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel 
      * The {@link android.content.Loader} is deprecated;
      * it is suggested that a combination {@link AndroidViewModel} and {@link LiveData} be used instead.
      * See: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#788a
-     *
+     * <p>
      * An {@link AsyncTask} is used to run a background thread.
      * Apparently, when used with an {@link AndroidViewModel} and {@link LiveData}, there is no memory leak problem.
      * See: https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4#fb19
@@ -78,7 +81,7 @@ public class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel 
 
         new AsyncTask<Void, Integer, List<T>>() {
             /**
-             * Gets a list of {@link BaseContainer} objects from the internet
+             * Gets a list of {@link GenericContainer} objects from the internet
              */
             @Override
             protected List<T> doInBackground(Void... voids) {
@@ -89,12 +92,14 @@ public class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel 
                     //Get the initial JSON list of containers
                     ContainerUtilities.Group orderGroup = ContainerUtilities.orderList.get(position);
                     String jsonResponseList = QueryUtilities.makeHttpRequest(orderGroup.urlJsonList);
+
+                    Log.e(LOG_TAG, position + " ; " + jsonResponseList);
                     if (jsonResponseList == null) {
                         Log.e(LOG_TAG, "Get JSON error");
-                        return null;
+                        return new ArrayList<>();
                     }
 
-                    //Generate a list of {@link BaseContainer} objects
+                    //Generate a list of {@link GenericContainer} objects
                     JSONObject root = new JSONObject(jsonResponseList);
                     JSONArray items = root.getJSONArray("items");
                     for (int i = 0; i < items.length(); i++) {
@@ -119,7 +124,7 @@ public class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel 
 
                 } catch (IOException | JSONException error) {
                     Log.e(LOG_TAG, "Unknown Error", error);
-                    return null;
+                    return new ArrayList<>();
                 }
 
                 //Sort Results
@@ -136,7 +141,7 @@ public class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel 
             }
 
             /**
-             * Shows how many {@link BaseContainer} objects have been found on the UI
+             * Shows how many {@link GenericContainer} objects have been found on the UI
              */
             @Override
             protected void onProgressUpdate(Integer... valueList) {
@@ -144,14 +149,6 @@ public class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel 
                     return;
                 }
                 progress.setValue(valueList[0]);
-            }
-
-            /**
-             * Applies the downloaded list of {@link BaseContainer} objects to the UI
-             */
-            @Override
-            protected void onPostExecute(List<T> data) {
-                containerList.setValue(data);
             }
         }.execute();
     }

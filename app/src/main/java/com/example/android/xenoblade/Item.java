@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 /**
  * A container for information about different pouch items
  */
-public class Item extends BaseContainer<Item> {
+public class Item extends GenericContainer<Item> {
     private static final Pattern regexGetCategory = Pattern.compile("Category:(.*)");
     private static final Pattern regexGetPrice = Pattern.compile("(\\S*).*title\\W*(\\w*)");
 

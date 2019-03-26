@@ -13,7 +13,7 @@ import java.util.List;
 
 //Must be public to use databinding
 /**
- * Holds data pertaining to a list item for a {@link BaseAdapter}
+ * Holds data pertaining to a list item for a {@link GenericAdapter}
  * This is a Generic class that is meant to be extended by a child class.
  *
  * Some methods (such as {@link #getContainerList}) have a default action.
@@ -27,8 +27,8 @@ import java.util.List;
  *
  * Use: https://stackoverflow.com/questions/18204190/java-abstract-classes-returning-this-pointer-for-derived-classes/39897781#39897781
  */
-public abstract class BaseContainer<T extends BaseContainer<T>> extends BaseObservable {
-    String LOG_TAG = BaseContainer.class.getSimpleName();
+public abstract class GenericContainer<T extends GenericContainer<T>> extends BaseObservable {
+    String LOG_TAG = GenericContainer.class.getSimpleName();
 
     int indexPage = -1;
     String title = "";
@@ -43,7 +43,7 @@ public abstract class BaseContainer<T extends BaseContainer<T>> extends BaseObse
 
     @Override
     public String toString() {
-        return "BaseContainer{" +
+        return "GenericContainer{" +
                 "title='" + title + '\'' +
                 "subText='" + subText + '\'' +
                 ", indexPage='" + indexPage + '\'' +
@@ -53,7 +53,7 @@ public abstract class BaseContainer<T extends BaseContainer<T>> extends BaseObse
                 '}';
     }
 
-    public BaseContainer() {
+    public GenericContainer() {
     }
 
     //Getters

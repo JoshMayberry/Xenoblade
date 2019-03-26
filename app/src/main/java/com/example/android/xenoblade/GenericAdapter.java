@@ -15,19 +15,19 @@ import java.util.List;
 
 //See: https://www.javacodegeeks.com/2013/07/java-generics-tutorial-example-class-interface-methods-wildcards-and-much-more.html#generics-naming-convention
 /**
- * Handles recycling views on a {@link BaseFragment}
- * @param <T> What child of {@link BaseContainer} to use for the fragment
+ * Handles recycling views on a {@link GenericFragment}
+ * @param <T> What child of {@link GenericContainer} to use for the fragment
  * @see Item
  * @see Blade
  * @see Location
  * @see HeartToHeart
  */
-public class BaseAdapter<T extends BaseContainer<T>> extends ArrayAdapter<T> {
-    String LOG_TAG = BaseAdapter.class.getSimpleName();
+public class GenericAdapter<T extends GenericContainer<T>> extends ArrayAdapter<T> {
+    String LOG_TAG = GenericAdapter.class.getSimpleName();
 
     private LayoutInflater inflater;
 
-    public BaseAdapter(Context context, List<T> containerList) {
+    public GenericAdapter(Context context, List<T> containerList) {
         super(context, 0, containerList);
     }
 

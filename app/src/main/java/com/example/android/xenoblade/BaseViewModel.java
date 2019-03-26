@@ -8,6 +8,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,6 +73,8 @@ public class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel 
         if (containerList.getValue() != null) {
             return;
         }
+
+        Toast.makeText(getApplication(), R.string.internet_loading, Toast.LENGTH_SHORT).show();
 
         new AsyncTask<Void, Integer, List<T>>() {
             /**

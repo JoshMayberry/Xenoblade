@@ -11,6 +11,10 @@ public class BladeFragment extends BaseFragment<Blade> {
         position = 0;
     }
 
+    //See: https://developer.android.com/guide/topics/resources/string-resource
+    //See: https://stackoverflow.com/questions/4161256/referencing-a-string-in-a-string-array-resource-with-xml
+    //See: https://developer.android.com/training/multiscreen/screendensities
+    //See: https://graphicdesign.stackexchange.com/questions/30431/how-to-make-drawable-of-android-app-for-all-density
     @Override
     List<Blade> getOffline(Context context) {
         List<Blade> bladeList = new ArrayList<>();

@@ -52,6 +52,11 @@ public class BaseViewModel<T extends BaseContainer<T>> extends AndroidViewModel 
         return progress;
     }
 
+    void reset() {
+        containerList.setValue(null);
+        progress.setValue(0);
+    }
+
     /**
      * The {@link android.content.Loader} is deprecated;
      * it is suggested that a combination {@link AndroidViewModel} and {@link LiveData} be used instead.

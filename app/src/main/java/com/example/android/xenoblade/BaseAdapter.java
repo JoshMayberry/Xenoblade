@@ -52,27 +52,45 @@ public class BaseAdapter<T extends BaseContainer<T>> extends ArrayAdapter<T> {
             binding.title.setText(container.getTitle());
             binding.subText.setText(container.getSubText());
 
-            String[] urlList = {container.getImage(), container.getSubImage()};
-            int[] dimenList = {R.dimen.sizeImage, R.dimen.sizeSubImage};
-            ImageView[] viewList = {binding.image, binding.subImage};
-
-            //See: http://square.github.io/picasso/#features
-            //See: https://stackoverflow.com/questions/47980845/does-picassos-resizedimen-method-take-dp-or-pixels/47980931#47980931
-            //Use: https://futurestud.io/tutorials/picasso-image-resizing-scaling-and-fit#centerinside
-            for (int i = 0; i < urlList.length; i++) {
-                if (urlList[i].isEmpty()) {
-                    viewList[i].setVisibility(View.GONE);
-                    continue;
-                }
-
-                viewList[i].setVisibility(View.VISIBLE);
-                Picasso.get()
-                        .load(urlList[i])
-                        .resizeDimen(dimenList[i], dimenList[i])
-                        .centerInside()
-                        .into(viewList[i]);
+            if (container.resourceImage != -1 || container.resourceSubImage != -1) {
+                offlineImage(binding, container);
+            } else {
+                onlineImage(binding, container);
             }
         }
         return binding.getRoot();
+    }
+
+    private void offlineImage(ListItemBinding binding, T container) {
+        if (container.resourceImage != -1) {
+            binding.image.setImageResource(container.resourceImage);
+            binding.image.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        }
+        if (container.resourceSubImage != -1) {
+            binding.subImage.setImageResource(container.resourceSubImage);
+        }
+    }
+
+    //See: http://square.github.io/picasso/#features
+    //See: https://stackoverflow.com/questions/47980845/does-picassos-resizedimen-method-take-dp-or-pixels/47980931#47980931
+    //Use: https://futurestud.io/tutorials/picasso-image-resizing-scaling-and-fit#centerinside
+    private void onlineImage(ListItemBinding binding, T container) {
+        String[] urlList = {container.getImage(), container.getSubImage()};
+        int[] dimenList = {R.dimen.sizeImage, R.dimen.sizeSubImage};
+        ImageView[] viewList = {binding.image, binding.subImage};
+
+        for (int i = 0; i < urlList.length; i++) {
+            if (urlList[i].isEmpty()) {
+                viewList[i].setVisibility(View.GONE);
+                continue;
+            }
+
+            viewList[i].setVisibility(View.VISIBLE);
+            Picasso.get()
+                    .load(urlList[i])
+                    .resizeDimen(dimenList[i], dimenList[i])
+                    .centerInside()
+                    .into(viewList[i]);
+        }
     }
 }

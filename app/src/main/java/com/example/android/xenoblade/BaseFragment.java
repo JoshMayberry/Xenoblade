@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 
 import com.example.android.xenoblade.databinding.FragmentBaseBinding;
@@ -24,15 +25,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 //See: http://www.tutorialspoint.com/java/java_documentation.htm
+
 /**
  * Displays a list of {@link BaseContainer} objects.
+ *
  * @param <T> What child of {@link BaseContainer} to use for the fragment
  * @see Item
  * @see Blade
  * @see Location
  * @see HeartToHeart
  */
-public class BaseFragment<T extends BaseContainer<T>> extends Fragment {
+public abstract class BaseFragment<T extends BaseContainer<T>> extends Fragment {
     public String LOG_TAG = BaseFragment.class.getSimpleName();
     FragmentBaseBinding binding;
 
@@ -41,12 +44,15 @@ public class BaseFragment<T extends BaseContainer<T>> extends Fragment {
 
     /**
      * Must be called so the fragment knows which element to use from {@link ContainerUtilities#orderList}.
+     *
      * @param position Which index in the TabLayout {@link MainActivity.MyFragmentPagerAdapter} this fragment is
      */
     public BaseFragment setPosition(int position) {
         this.position = position;
         return this;
     }
+
+    abstract List<T> getOffline(Context context);
 
     @Nullable
     @Override
@@ -56,17 +62,65 @@ public class BaseFragment<T extends BaseContainer<T>> extends Fragment {
         //See: https://stackoverflow.com/questions/34706399/how-to-use-data-binding-with-fragment/40527833#40527833
         binding = FragmentBaseBinding.inflate(inflater, container, false);
 
-        //Network connection check
-        //See: https://developer.android.com/training/basics/network-ops/connecting.html
-        //Use: https://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html#DetermineConnection
+        if (checkOnline(context)) {
+            onlineSetup(context);
+        } else {
+            offlineSetup(context);
+        }
+
+        return binding.getRoot();
+    }
+
+    //See: https://developer.android.com/training/basics/network-ops/connecting.html
+    //Use: https://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html#DetermineConnection
+    boolean checkOnline(Context context) {
         ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo == null || !networkInfo.isConnected()) {
-            Log.e(LOG_TAG, "No Network Connection");
-            binding.loadingIndicator.setVisibility(View.GONE);
-            binding.emptyView.setText(R.string.internet_error);
-            return binding.getRoot();
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
+    void reset(Context context) {
+        binding.loadingIndicator.setVisibility(View.VISIBLE);
+        binding.emptyView.setVisibility(View.VISIBLE);
+        ViewModelProviders.of(this).get(BaseViewModel.class).reset();
+        if (checkOnline(context)) {
+            onlineSetup(context);
+        } else {
+            offlineSetup(context);
         }
+    }
+
+    void offlineSetup(final Context context) {
+        Log.e(LOG_TAG, "No Network Connection");
+        Toast.makeText(context, R.string.internet_error, Toast.LENGTH_SHORT).show();
+        binding.retry.setVisibility(View.VISIBLE);
+        binding.loadingIndicator.setVisibility(View.GONE);
+        binding.emptyView.setVisibility(View.GONE);
+
+        baseAdapter = new BaseAdapter(context, getOffline(context));
+        binding.list.setAdapter(baseAdapter);
+
+        //Display error message
+        binding.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                //See: https://developer.android.com/guide/topics/ui/notifiers/toasts.html#Basics
+                Toast.makeText(context, R.string.page_error, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        binding.retry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reset(context);
+            }
+        });
+    }
+
+    void onlineSetup(Context context) {
+        binding.retry.setVisibility(View.GONE);
+        binding.loadingIndicator.setVisibility(View.VISIBLE);
+        binding.emptyView.setVisibility(View.VISIBLE);
 
         //Empty list state
         //See: https://material.io/design/communication/empty-states.html
@@ -130,8 +184,6 @@ public class BaseFragment<T extends BaseContainer<T>> extends Fragment {
                 binding.counter.setText(String.valueOf(progress));
             }
         });
-
-        return binding.getRoot();
     }
 }
 

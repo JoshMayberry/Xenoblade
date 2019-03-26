@@ -39,6 +39,20 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"/>
 
+        <Button
+            android:id="@+id/retry"
+            android:layout_margin="@dimen/border"
+            android:paddingTop="@dimen/buttton_padding_height"
+            android:paddingBottom="@dimen/buttton_padding_height"
+            android:paddingStart="@dimen/button_padding_width"
+            android:paddingEnd="@dimen/button_padding_width"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_alignParentBottom="true"
+            android:text="@string/retry"
+            />
+
     </RelativeLayout>
 </layout>
 

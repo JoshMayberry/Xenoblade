@@ -37,6 +37,10 @@ public abstract class BaseContainer<T extends BaseContainer<T>> extends BaseObse
     String urlImage = "";
     String urlSubImage = "";
 
+    //These are used to store offline data values
+    int resourceImage = -1;
+    int resourceSubImage = -1;
+
     @Override
     public String toString() {
         return "BaseContainer{" +
@@ -109,11 +113,23 @@ public abstract class BaseContainer<T extends BaseContainer<T>> extends BaseObse
 
     T setImage(String url) {
         this.urlImage = url;
+        this.resourceImage = -1;
+        return (T) this;
+    }
+
+    T setImage(int drawable) {
+        this.resourceImage = drawable;
         return (T) this;
     }
 
     T setSubImage(String url) {
         this.urlSubImage = url;
+        this.resourceSubImage = -1;
+        return (T) this;
+    }
+
+    T setSubImage(int drawable) {
+        this.resourceSubImage = drawable;
         return (T) this;
     }
 

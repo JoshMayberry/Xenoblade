@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Xenoblade</string>
     <string name="unknown_error">N/A</string>
-    <string name="internet_error">No Internet Connection</string>
+    <string name="internet_error">No Internet Connection\nUsing sample data</string>
+    <string name="page_error">No Internet Connection\nPage Unavailable</string>
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="retry">Retry</string>
 
     <string name="blade_title">Blades</string>
     <string name="blade_error">No Blades Found</string>
@@ -15,4 +17,72 @@
 
     <string name="item_title">Items</string>
     <string name="item_error">No Items Found</string>
+
+    <string name="blade_offline_1_title">Aegaeon</string>
+    <string name="blade_offline_2_title">Agate</string>
+    <string name="blade_offline_3_title">Azami</string>
+    <string name="blade_offline_4_title">Boreas</string>
+    <string name="blade_offline_5_title">Mythra</string>
+    <string name="blade_offline_6_title">Pandoria</string>
+    <string name="blade_offline_7_title">Pyra</string>
+    <string name="blade_offline_8_title">Theory</string>
+
+    <string name="location_offline_1_title">Argentum</string>
+    <string name="location_offline_1_subText">The largest of the Titans, Goldmouth, looks like a flying whale.</string>
+    <string name="location_offline_2_title">Azurda </string>
+    <string name="location_offline_2_subText">A small Titan, that takes the appearance of a flying white dragon.</string>
+    <string name="location_offline_3_title">Cliffs of Morytha</string>
+    <string name="location_offline_3_subText">They consist of a rotting Titan corpse that sits precariously perched at the edge of the Great Void just outside the World Tree.</string>
+    <string name="location_offline_4_title">Elysium</string>
+    <string name="location_offline_4_subText">It is a fabled paradise supposedly located on top of the World Tree.</string>
+    <string name="location_offline_5_title">Empire of Mor Ardain</string>
+    <string name="location_offline_5_subText">It is a militaristic empire from the Titan Mor Ardain. They control Titans through mechanical means.</string>
+    <string name="location_offline_6_title">Gormott</string>
+    <string name="location_offline_6_subText">It is a large giraffe-like entity covered in lush green woodlands and plains.</string>
+    <string name="location_offline_7_title">Indol</string>
+    <string name="location_offline_7_subText">It is a dragon-like Titan that flies above the Cloud Sea. It is ruled by the Indoline Praetorium, who worship and revere the Titan.</string>
+    <string name="location_offline_8_title">Tantal</string>
+    <string name="location_offline_8_subText">It is a force that rules from within the Titan Genbu. Little is known about Tantal and Genbu since the kingdom is an isolationist state, strictly controlling entry.</string>
+    <string name="location_offline_9_title">Uraya</string>
+    <string name="location_offline_9_subText">It is a force that rules from within the Titan Uraya. The capital is Fonsa Myma and Queen Raqura reigns over the nation.</string>
+    <string name="location_offline_10_title">Morytha</string>
+    <string name="location_offline_10_subText">A ruined nation. It was destroyed long before Alrest even existed, and lies below the Cloud Sea, near the roots of the World Tree.</string>
+
+    <string name="event_offline_1_title">Azurda Heart-to-Hearts</string>
+    <string name="event_offline_1_subText">Events: 9</string>
+    <string name="event_offline_2_title">Brighid Heart-to-Hearts</string>
+    <string name="event_offline_2_subText">Events: 16</string>
+    <string name="event_offline_3_title">Dromarch Heart-to-Hearts</string>
+    <string name="event_offline_3_subText">Events: 7</string>
+    <string name="event_offline_4_title">Mythra Heart-to-Hearts</string>
+    <string name="event_offline_4_subText">Events: 6</string>
+    <string name="event_offline_5_title">Morag Heart-to-Hearts</string>
+    <string name="event_offline_5_subText">Events: 14</string>
+    <string name="event_offline_6_title">Nia Heart-to-Hearts</string>
+    <string name="event_offline_6_subText">Events: 17</string>
+    <string name="event_offline_7_title">Pandoria Heart-to-Hearts</string>
+    <string name="event_offline_7_subText">Events: 12</string>
+    <string name="event_offline_8_title">Pyra Heart-to-Hearts</string>
+    <string name="event_offline_8_subText">Events: 17</string>
+
+    <string name="item_offline_1_title">Addam\'s Supercakes</string>
+    <string name="item_offline_1_subText">540 Gold</string>
+    <string name="item_offline_2_title">Bipedal Crab Chili</string>
+    <string name="item_offline_2_subText">810 Gold</string>
+    <string name="item_offline_3_title">Cedarwood Koto</string>
+    <string name="item_offline_3_subText">540 Gold</string>
+    <string name="item_offline_4_title">Chunky Juice</string>
+    <string name="item_offline_4_subText">90 Gold</string>
+    <string name="item_offline_5_title">Codweave Safety Blanky</string>
+    <string name="item_offline_5_subText">720 Gold</string>
+    <string name="item_offline_6_title">Elastifying Tonic</string>
+    <string name="item_offline_6_subText">360 Gold</string>
+    <string name="item_offline_7_title">Felt Cushioning</string>
+    <string name="item_offline_7_subText">1,260 Gold</string>
+    <string name="item_offline_8_title">Glitterbake</string>
+    <string name="item_offline_8_subText">90 Gold</string>
+    <string name="item_offline_9_title">Heatstripe</string>
+    <string name="item_offline_9_subText">4,500 Gold</string>
+    <string name="item_offline_10_title">Leftherian Life</string>
+    <string name="item_offline_10_subText">2,920 Gold</string>
 </resources>
